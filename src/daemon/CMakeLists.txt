@@ -51,7 +51,7 @@ if("${CMAKE_SYSTEM_NAME}" MATCHES "Linux|CYGWIN|MSYS")
     set(SOCKET_LIBRARY "")
 else()
     set(RT_LIBRARY "")
-    set(SOCKET_LIBRARY socket)
+    set(SOCKET_LIBRARY "")
 endif()
 
 if(WITH_UDP_CONNECTION)

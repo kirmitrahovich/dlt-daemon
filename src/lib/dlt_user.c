@@ -3821,7 +3821,11 @@ void dlt_user_housekeeperthread_function(void *ptr)
 #endif
 
 #ifdef DLT_USE_PTHREAD_SETNAME_NP
+#ifdef __APPLE__
+    if (pthread_setname_np("dlt_housekeeper"))
+#else
     if (pthread_setname_np(dlt_housekeeperthread_handle, "dlt_housekeeper"))
+#endif
         dlt_log(LOG_WARNING, "Failed to rename housekeeper thread!\n");
 #elif linux
     if (prctl(PR_SET_NAME, "dlt_housekeeper", 0, 0, 0) < 0)
@@ -5030,7 +5034,9 @@ int dlt_start_threads()
      */
     pthread_condattr_t attr;
     pthread_condattr_init(&attr);
+#ifndef __APPLE__
     pthread_condattr_setclock(&attr, CLOCK_MONOTONIC);
+#endif
     pthread_cond_init(&dlt_housekeeper_running_cond, &attr);
 
     if (pthread_create(&(dlt_housekeeperthread_handle),

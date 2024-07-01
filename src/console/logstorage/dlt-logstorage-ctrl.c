@@ -65,6 +65,8 @@
 
 #if defined(__linux__)
 #   include "sd-daemon.h"
+#elif defined(__APPLE__)
+#   include <spawn.h>
 #endif
 
 #include "dlt_protocol.h"
@@ -587,7 +589,13 @@ int main(int argc, char *argv[])
             /* No message can be sent or Systemd is not available.
              * Daemonizing manually.
              */
-            if (daemon(1, 1)) {
+#ifdef __APPLE__
+            pid_t pid;
+            if (posix_spawn(&pid, NULL, NULL, NULL, NULL, NULL))
+#else
+            if (daemon(1, 1))
+#endif
+            {
                 pr_error("Failed to daemonize: %s\n", strerror(errno));
                 return EXIT_FAILURE;
             }
